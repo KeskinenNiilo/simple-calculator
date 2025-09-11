@@ -1,0 +1,56 @@
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: rgb(55,55,55);
+    color: white;
+}
+
+h3 {
+    font-weight: 300;
+    text-align: center;
+    background-color: rgb(65,65,65);
+    border-radius: 32px;
+}
+
+
+.result {
+    font-size: 64px;
+}
+
+
+.numberInput {
+    font-size: 60px;
+}
+
+
+button {
+    font-size: 44px;
+
+    height: 52px;
+    width: 52px;
+
+    margin: 4px;
+
+    text-align: center;
+    align-items: center;
+
+    background-color: rgb(65,65,65);
+}
+
+button:not(.plus, .minus, .multiply, .divide, .c, .equals) {
+    color: yellow;
+}
+
+.plus, .minus, .multiply, .divide {
+    color: cyan;
+}
+
+.c, .equals {
+    color: magenta;
+}
+
+
+.div1, .div2, .div3, .div4{
+    display: flex;
+    justify-content: center;
+}
+
