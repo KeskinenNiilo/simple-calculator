@@ -131,8 +131,9 @@ const equals = function() {
 
         if (isNaN(r)) throw new Error();
 
-        document.getElementById('results').value = parseFloat(r.toFixed(10));
+        document.getElementById('results').value = parseFloat(r.toFixed(15));
     } catch (error) {
         document.getElementById('results').value = 'SYNTAX ERROR';
     }
 };
+
