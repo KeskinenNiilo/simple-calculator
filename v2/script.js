@@ -1,167 +1,138 @@
 const inputField = document.getElementById('inputField');
 
 const addNumber = function(number) {
-
-    inputField.value = inputField.value + number;
-
+    inputField.value += number;
 };
 
 const backSpace = function() {
-
     inputField.value = inputField.value.slice(0, -1);
-
 };
 
 const reset = function() {
-
     inputField.value = '';
     document.getElementById('results').value = '';
-
 };
 
 const addParanthesis = function() {
-
-    let open = (inputField.value.split('(').length <= inputField.value.split(')').length) ? '(' : ')';
-    inputField.value = inputField.value + open;
-
+    const open = (inputField.value.split('(').length <= inputField.value.split(')').length) ? '(' : ')';
+    inputField.value += open;
 };
 
 const addSymbol = function(symbol) {
-
-    inputField.value = inputField.value + symbol;
-
+    inputField.value += symbol;
 };
+
 
 const arrToNumbers = function(array) {
-
-    let returnArray = new Array();
-    let stringHelper = "";
+    const returnArray = [];
+    let currentNumber = "";
 
     for (let i = 0; i < array.length; i++) {
-
         const char = array[i];
+        const prev = array[i - 1];
+        const next = array[i + 1];
 
-        if (char == '+' || char == '*' || char == '/' || char == '^' || char == '(' || char == ')') {
+        
+        const isUnaryMinus = char === '-' && 
+            (i === 0 || ['+', '-', '*', '/', '^', '(', 'u-'].includes(prev));
 
-            if (stringHelper != "") {
-                returnArray.push(Number(stringHelper));
-                stringHelper = "";
-            };
-
+        if (isUnaryMinus) {
+            
+            if (currentNumber !== "") {
+                returnArray.push(Number(currentNumber));
+                currentNumber = "";
+            }
+            returnArray.push('u-');
+        }
+        else if ('+-*/^()'.includes(char)) {
+            if (currentNumber !== "") {
+                returnArray.push(Number(currentNumber));
+                currentNumber = "";
+            }
             returnArray.push(char);
-
-        } else if (char == '-') {
-
-            if (i === 0 || array[i - 1] == '+' || array[i - 1] == '*' || array[i - 1] == '/' || array[i - 1] == '^' || array[i - 1] == '(') {
-                stringHelper = stringHelper + char;
-            } else {
-                if (stringHelper != "") {
-                    returnArray.push(Number(stringHelper));
-                    stringHelper = "";
-                };
-                returnArray.push('+');
-            };
-
-        } else if (char == '.') {
-
-            stringHelper = stringHelper + char;
-
-        } else {
-
-            stringHelper = stringHelper + char;
-
-        };
-
-        if (i === array.length - 1 || array[i + 1] == '+' || array[i + 1] == '*' || array[i + 1] == '/' || array[i + 1] == '^' || array[i + 1] == '(' || array[i + 1] == ')') {
-
-            if (stringHelper != "") {
-                returnArray.push(Number(stringHelper));
-                stringHelper = "";
-            };
-
-        };
-
-    };
+        }
+        else {
+            currentNumber += char;
+            if (i === array.length - 1 || '+-*/^()'.includes(array[i + 1])) {
+                returnArray.push(Number(currentNumber));
+                currentNumber = "";
+            }
+        }
+    }
 
     return returnArray;
-
 };
+
 
 const calculate = function(array) {
-
-    const pemdas = [ ['^'], ['*', '/'], ['+'] ];
-
+    
+    const pemdas = [
+    ['^'],        
+    ['u-'],       
+    ['*', '/'],   
+    ['+', '-']    
+    ];
+    
     const operations = {
-        '^' : (a, b) => Math.pow(a, b),
-        '*' : (a, b) => a * b,
-        '/' : (a, b) => a / b,
-        '+' : (a, b) => a + b
+        'u-': (a) => -a, 
+        '^': (a, b) => Math.pow(a, b),
+        '*': (a, b) => a * b,
+        '/': (a, b) => a / b,
+        '+': (a, b) => a + b,
+        '-': (a, b) => a - b
     };
 
-    for (let x of pemdas) {
-
+    for (let ops of pemdas) {
         let i = 0;
-
         while (i < array.length) {
-
-            if (x.includes(array[i])) {
-                array.splice(i - 1, 3, operations[array[i]](array[i - 1], array[i + 1]));
-                i--;
+            if (ops.includes(array[i])) {
+                if (array[i] === 'u-') {
+                    
+                    array.splice(i, 2, operations['u-'](array[i + 1]));
+                } else {
+                    
+                    array.splice(i - 1, 3, operations[array[i]](array[i - 1], array[i + 1]));
+                    i--;
+                }
             } else {
                 i++;
-            };
-
-        };
-
-    };
-
+            }
+        }
+    }
     return array[0];
-
 };
+
 
 const betweenParanthesis = function(array) {
-
     while (array.includes('(')) {
-
-        let left = array.lastIndexOf('(');
-        let right = array.indexOf(')', left);
-
+        const left = array.lastIndexOf('(');
+        const right = array.indexOf(')', left);
         if (right === -1) throw new Error();
-
-        let result = calculate(array.slice(left + 1, right));
-
+        const result = calculate(array.slice(left + 1, right));
         array.splice(left, right - left + 1, result);
-
-    };
-
+    }
+    
+    
     return array;
-
 };
 
+
 const equals = function() {
-
     try {
-
         let inputString = inputField.value.replace(/\s+/g, '');
         let array = inputString.split('');
-
         if (array.length === 1) {
             document.getElementById('results').value = array[0];
             return;
-        };
-
+        }
         array = arrToNumbers(array);
         array = betweenParanthesis(array);
-        let r = calculate(array);
+        const r = calculate(array);
 
         if (isNaN(r)) throw new Error();
 
-        document.getElementById('results').value = r;
-
+        document.getElementById('results').value = parseFloat(r.toFixed(10));
     } catch (error) {
-
         document.getElementById('results').value = 'SYNTAX ERROR';
-
-    };
-
+    }
 };
