@@ -1,1 +1,0 @@
-This requires node.js and electron to run.
