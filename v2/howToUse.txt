@@ -1,5 +1,5 @@
 This requires node.js and Electron to run.
-
-follow the Electron tuotrial to install Electron using node.js, then replace the files used in the tutorial with these.
-
+tutorial:
 https://www.electronjs.org/docs/latest/tutorial/tutorial-prerequisites
+
+'npm run start' in v2 Dir -> starts program,
